@@ -1,4 +1,5 @@
 
 *.o
+*.png
 .depend
 maze.exe

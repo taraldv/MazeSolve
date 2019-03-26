@@ -140,22 +140,25 @@ int* Parser::getPixels(int col, int row){
 Square** Parser::parse(){
   int side = 16;
   int border = 1;
-  int verticalSquares = (height-border*2)/side;
-  int horisontalSquares = (width-border*2)/side;
-  squares = verticalSquares*horisontalSquares;
+  int numberOfSquareRows = (height-border*2)/side;
+  int numberOfSquareColumns = (width-border*2)/side;
+  squares = numberOfSquareRows*numberOfSquareColumns;
   Square** squareArr = new Square*[squares];
-  for(int i=0;i<horisontalSquares;i++){
-    for(int j=0;j<verticalSquares;j++){
+  for(int i=0;i<numberOfSquareRows;i++){
+    for(int j=0;j<numberOfSquareColumns;j++){
       int** pixelArr = new int*[side*side];
+      //cout << "square row: " << i << endl;
+      //cout << "square col: " << j << endl;
       for(int x=0;x<side;x++){
-        int col = i*horisontalSquares+x;
+        int row = i*side+x;
         for(int y=0;y<side;y++){
-          int row = j*verticalSquares+y;
+          int col = j*side+y;
+          //cout << "pixel row&col: " << row+1 << "&" << col+1 << endl;
           pixelArr[x*side+y] = getPixels(col+1,row+1);
         }
       }
-      int squareIndex = i*horisontalSquares+j;
-      squareArr[squareIndex] = new Square(pixelArr);
+      int squareIndex = i*numberOfSquareRows+j;
+      squareArr[squareIndex] = new Square(pixelArr,j,i);
     }
   }
   return squareArr;

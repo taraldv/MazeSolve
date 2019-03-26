@@ -2,7 +2,11 @@
 
 using namespace std;
 
-Square::Square(int** arr):arr(arr){
+void Square::printCoords(){
+	cout << "row: " << row << " col: " << col << endl;
+}
+
+Square::Square(int** arr, int col, int row):arr(arr),row(row),col(col){
 //begynner med venstre og går klokka
 	//Color** test = new Color*;
 	int* westWall = new int[size];
@@ -82,8 +86,8 @@ bool Square::isNode(){
 	//verticalPath er motsatt
 	bool verticalPath = !north && !south && west && east;
 
-	//hvis en av de er true, er square en path
-	return !horisontalPath || !verticalPath;
+	//hvis begge paths er false, er square en node
+	return !horisontalPath && !verticalPath;
 }
 
 int Square::getOpeningCount(){
@@ -96,12 +100,27 @@ int Square::getOpeningCount(){
 	return count;
 }
 
-//debugging
-void Square::print(){
+int Square::getSize(){
+	return size;
+}
+
+//old print
+/*void Square::print(){
 	for(int i=0;i<size;i++){
 		for(int j=0;j<size;j++){
 			int* temp = arr[i*size+j];
 			cout << temp[0]<< " " << temp[1] << " " << temp[2] << " , ";
+		}
+		cout << endl;
+	}
+}*/
+
+void Square::print(){
+	for(int i=0;i<size;i++){
+		for(int j=0;j<size;j++){
+			int* temp = arr[i*size+j];
+			Color c = getColor(temp);
+			cout << c << " ";
 		}
 		cout << endl;
 	}
