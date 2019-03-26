@@ -6,53 +6,44 @@ void Square::printCoords(){
 	cout << "row: " << row << " col: " << col << endl;
 }
 
-Square::Square(int** arr, int col, int row):arr(arr),row(row),col(col){
-//begynner med venstre og går klokka
-	//Color** test = new Color*;
-	int* westWall = new int[size];
-	int* northWall = new int[size];
-	int* eastWall= new int[size];
-	int* southWall= new int[size];
+void Square::setWalls(){
+	walls = new bool[4];
+	int westCount = 0;
+	int northCount = 0;
+	int eastCount = 0;
+	int southCount = 0;
 	for(int i=0;i<size*size;i++){
-		if(i%size==0){
-			if(getColor(arr[i])==Color::BLACK){
-				westWall[i/16] = Color::BLACK;
-			} else {
-				westWall[i/16] = Color::WHITE;
-			}
+		if(i%size==0 && getColor(arr[i])==Color::BLACK){
+			westCount++;
 			//cout << "index: " << i << " venstre kant RGB: " << arr[i][0]<< " " << arr[i][1] << " " << arr[i][2] << " color: " << getColor(arr[i]) << endl;
 		}
-		if(i<size){
-			if(getColor(arr[i])==Color::BLACK){
-				northWall[i] = Color::BLACK;
-			} else {
-				northWall[i] = Color::WHITE;
-			}
+		if(i<size && getColor(arr[i])==Color::BLACK){
+			northCount++;
 			//cout << "index: " << i << " øvre kant RGB: " << arr[i][0]<< " " << arr[i][1] << " " << arr[i][2] << " color: " << getColor(arr[i]) << endl;
 		}
-		if (i%size==15){
-			int eastIndex = i/size;
-			//cout << "i "<< i << " eastIndex " << eastIndex << endl;
-			if(getColor(arr[i])==Color::BLACK){
-				eastWall[eastIndex] = Color::BLACK;
-			} else {
-				eastWall[eastIndex] = Color::WHITE;
-			}
+		if (i%size==15 && getColor(arr[i])==Color::BLACK){
+			eastCount++;
 			//cout << "index: " << i << " høyre kant RGB: " << arr[i][0]<< " " << arr[i][1] << " " << arr[i][2] << " color: " << getColor(arr[i]) << endl;
 		}
-		if(i>=size*size-size){
-			if(getColor(arr[i])==Color::BLACK){
-				southWall[i-240] = Color::BLACK;
-			} else {
-				southWall[i-240] = Color::WHITE;
-			}
+		if(i>=size*size-size && getColor(arr[i])==Color::BLACK){
+			southCount++;
 			//cout << "index: " << i << " nedre kant RGB: " << arr[i][0]<< " " << arr[i][1] << " " << arr[i][2] << " color: " << getColor(arr[i]) << endl;
 		}
 	}
-	walls[0] = westWall;
-	walls[1] = northWall;
-	walls[2] = eastWall;
-	walls[3] = southWall;
+	//hvis svart telling er større enn size/2, finnes veggen
+	walls[0] = westCount>size/2;
+	walls[1] = northCount>size/2;
+	walls[2] = eastCount>size/2;
+	walls[3] = southCount>size/2;
+
+}
+
+Square::Square(int** arr, int col, int row):arr(arr),row(row),col(col){
+	setWalls();
+}
+
+void Square::debugWalls(){
+	setWalls();
 }
 
 Color Square::getColor(int* arr){
@@ -69,14 +60,10 @@ Color Square::getColor(int* arr){
 }
 
 bool Square::hasWall(Direction direction){
-	int count = 0;
-	for(int i=0;i<size;i++){
-		count += walls[direction][i];
-	}
-	return count > size/2;
+	return  walls[(int)direction];
 }
 
-bool Square::isNode(){
+bool Square::isNode(bool firstRow, bool lastRow){
 	bool west = hasWall(Direction::WEST);
 	bool north = hasWall(Direction::NORTH);
 	bool east = hasWall(Direction::EAST);
@@ -86,8 +73,9 @@ bool Square::isNode(){
 	//verticalPath er motsatt
 	bool verticalPath = !north && !south && west && east;
 
-	//hvis begge paths er false, er square en node
-	return !horisontalPath && !verticalPath;
+	//hvis begge paths er false, er square en node. 
+	//Eller hvis vi er i første rad og ingen north wall, eller vi er i siste rad og ingen south wall
+	return (!horisontalPath && !verticalPath) || (firstRow && !north) || (lastRow && !south);
 }
 
 int Square::getOpeningCount(){

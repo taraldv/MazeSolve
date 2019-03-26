@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <queue>
 
 class Maze{
 private:
@@ -17,12 +18,22 @@ private:
 	int sideNumber;
 	Node** nodeArray;
 	void addNabo(Node* nodeOne, Node* nodeTwo, int len);
+
+	//algo
+	bool dfs(Node* current, Node* target, std::vector<Node*>& visited);
+	bool notVisited(Node* node, std::vector<Node*>& visited);
 public:
+	Node* getStartNode();
+	Node* getEndNode();
 	Maze(Parser* parser);
 	void debugging();
-	void buildNodes();
+	//void buildNodes();
 	void connectNodes();
 	void printNodes();
+
+	//algo
+	bool dfs(Node* start, Node* target);
+	bool bfs(Node* start, Node* target);
 };
 
 #endif

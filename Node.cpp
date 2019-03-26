@@ -22,3 +22,11 @@ void Node::printSquare(){
 void Node::printCoords(){
 	square->printCoords();
 }
+
+Square* Node::getSquare(){
+	return square;
+}
+
+vector<Node*> Node::getNaboer(){
+	return naboVektor;
+}

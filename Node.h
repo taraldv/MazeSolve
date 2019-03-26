@@ -11,10 +11,12 @@ private:
 	std::vector<Node*> naboVektor;
 public:
 	Node(Square* square);
+	std::vector<Node*> getNaboer();
 	void addNabo(Node* node);
 	void printNaboer();
 	void printSquare();
 	void printCoords();
+	Square* getSquare();
 };
 
 #endif
