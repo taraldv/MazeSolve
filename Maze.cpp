@@ -39,6 +39,7 @@ void Maze::printNodes(){
 }
 
 void Maze::connectNodes(){
+	nodeArray = new Node*[numberOfSquares];
 	for(int row=0;row<sideNumber;row++){
 		for(int col=0;col<sideNumber;col++){
 			int index = row*sideNumber+col;
@@ -46,8 +47,8 @@ void Maze::connectNodes(){
 
 			//hvis currentSquare er node
 			if(tempSquare->isNode()){
-				Node* tempNode = nodeArray[index];
-
+				Node* tempNode = new Node(tempSquare);
+				nodeArray[index] = tempNode;
 				//hvis Square ikke har wall til venstre og col er større enn 0, finn første venstre nabo
 				if(!tempSquare->hasWall(Direction::WEST) && col > 0){
 					

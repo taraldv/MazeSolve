@@ -1,6 +1,6 @@
 #include "Path.h"
 
-Path::Path(int len, Node* to, Node* from):length(len),from(from),to(to){
+Path::Path(int len, Node* from, Node* to):length(len),from(from),to(to){
 }
 
 Node* Path::getFromNode(){

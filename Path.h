@@ -7,10 +7,10 @@
 class Path{
 private:
 	int length;
-	Node* to;
 	Node* from;
+	Node* to;
 public:
-	Path(int length, Node* to, Node* from);
+	Path(int length,Node* from, Node* to);
 	Node* getFromNode();
 	Node* getToNode();
 	int getLength();
