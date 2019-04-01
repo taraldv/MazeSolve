@@ -2,7 +2,7 @@ PROG = maze
 CC = g++
 CPPFLAGS = -Wall -ggdb -std=c++11
 LDFLAGS = -lpng 
-OBJS = main.o Parser.o Square.o Maze.o Node.o Path.o
+OBJS = main.o Parser.o Square.o Maze.o Node.o Path.o Writer.o
 
 all: $(PROG) .depend
 

@@ -6,6 +6,18 @@ Maze::Maze(Parser* parser){
 	squareArray = parser->parse();
 	numberOfSquares = parser->getSquareNumber();
 	sideNumber = sqrt(numberOfSquares);
+	connectNodes();
+}
+
+Square** Maze::getSquareArray(){
+	return squareArray;
+}
+int Maze::getArraySize(){
+	return numberOfSquares;
+}
+
+int Maze::getSides(){
+	return sideNumber;
 }
 
 void Maze::addNabo(Node* one, Node* two, int len){
@@ -25,6 +37,8 @@ Node* Maze::getStartNode(){
 			}
 		}
 	}
+	cout << "skal ikke skje" << endl;
+	return nullptr;
 }
 
 Node* Maze::getEndNode(){
@@ -37,6 +51,8 @@ Node* Maze::getEndNode(){
 			}
 		}
 	}
+	cout << "skal ikke skje" << endl;
+	return nullptr;
 }
 
 void Maze::printNodes(){
@@ -88,7 +104,7 @@ void Maze::printPathCount(){
 	int length = 0;
 	for(size_t i=0;i<paths.size();i++){
 		if(paths[i]->getLength()>1){
-			length += paths[i]->getLength();
+			length += paths[i]->getLength()-1;
 			count++;
 		}
 	}
@@ -103,8 +119,8 @@ void Maze::connectNodes(){
 		for(int col=0;col<sideNumber;col++){
 			int index = row*sideNumber+col;
 			Square* tempSquare = squareArray[index];
-			int tempSquareRow = tempSquare->getRow();
-			int tempSquareCol = tempSquare->getCol();
+			//int tempSquareRow = tempSquare->getRow();
+			//int tempSquareCol = tempSquare->getCol();
 
 
 			//hvis currentSquare er node
@@ -167,8 +183,161 @@ void Maze::debugging(){
 	}
 }
 
-void Maze::runDijkstra(Node* start){
 
+vector<dStruct> Maze::generateStructs(Node* start){
+	vector<dStruct> output;
+	for(int i=0;i<numberOfSquares;i++){
+		Node* temp = nodeArray[i];
+
+		/* setter avstand til alle nodes lik max, lagrer det i en struct arr */
+		if(temp){
+			dStruct tempStruct;
+
+			// lengden til start settes lik 0
+			if(temp == start){
+				tempStruct.length = 0;
+			} else {
+				tempStruct.length = numeric_limits<int>::max();
+			}
+			tempStruct.node = temp;
+			tempStruct.throughNode = temp;
+			output.push_back(tempStruct);
+		}
+	}
+	return output;
+}
+
+bool Maze::vectorSort(dStruct x, dStruct y){
+	return x.length>y.length;
+}
+
+void Maze::oppdaterGraf(vector<Path*> nyPathVector){
+	//går igjennom alle Pather i grafen
+	for (size_t j = 0;j<paths.size();j++){
+		Path* path = paths[j];
+		bool isOptimalPath = false;
+
+		for(size_t i=0;i<nyPathVector.size();i++){
+			Path* tempPath = nyPathVector[i];
+			if(path==tempPath){
+				isOptimalPath = true;
+				break;
+			}
+		}
+
+		//hvis current Path ikke finnes i nyPathVector, skal den slettes
+		if(!isOptimalPath){
+			delete path;
+		}
+	}
+	paths = nyPathVector;
+}
+
+Path* Maze::getPathBetweenNodes(Node* n, Node* m){
+	for(size_t i=0;i<paths.size();i++){
+		Path* p = paths[i];
+		Node* from = p->getFromNode();
+		Node* to = p->getToNode();
+		bool fromMatch = (from == n || from == m);
+		bool toMatch = (to == n || to == m);
+		if(fromMatch && toMatch) return p;
+	}
+	cout << "path not found, burde ikke skje" << endl;
+	return NULL;
+}
+
+void printStructs(vector<dStruct>&alias){
+	for(size_t i=0;i<alias.size();i++){
+		int length = alias[i].length;
+		Node* node = alias[i].node;
+		Node* throughNode = alias[i].throughNode;
+		cout << node->getCoords() << " len:" << length << " through " << throughNode->getCoords() << endl;
+	}
+}
+
+void Maze::updateDStruct(Node* current,int currentPathLength, Node* nabo, vector<dStruct>&alias){
+	Path* p = getPathBetweenNodes(current,nabo);
+	/*current->printCoords();
+	cout << " <-- " << p->getLength() << " --> ";
+	nabo->printCoords();
+	cout << endl;*/
+
+	int length = p->getLength()+currentPathLength;
+	for(size_t i=0;i<alias.size();i++){
+		dStruct tempStruct = alias[i];
+		Node* structNode = tempStruct.node;
+		if(nabo==structNode){
+			int currentDistance = tempStruct.length;
+
+			if(length<currentDistance){
+				//cout << "oppdaterer struct" << endl;
+				alias[i].length = length;
+				alias[i].throughNode = current;
+			}
+		}
+	}
+}
+
+void printPath(Node* start, Node* end,vector<dStruct> sVect){
+
+	Node* through = end;
+	Node* current = nullptr;
+
+	while(current != start){
+
+		for(size_t i=0;i<sVect.size();i++){
+			dStruct temp = sVect[i];
+			if(temp.node==through){
+				through = temp.throughNode;
+				current = temp.node;
+				cout << current->getCoords() << endl;
+			}
+		}
+	}
+}
+
+void Maze::runDijkstra(Node* start, Node* end){
+	vector<dStruct> structVector = generateStructs(start);
+	vector<dStruct> finished;
+
+	sort(structVector.begin(),structVector.end(),vectorSort);
+
+	//for hver node, oppdater avstand hvis kortere fra current
+	while(!structVector.empty()){
+
+		dStruct currentStruct = structVector.back();
+		int currentPathLength = currentStruct.length;
+		structVector.pop_back();
+		//cout << currentStruct.length << endl;
+		Node* currentNode = currentStruct.node;
+		vector<Node*> currentNodeNaboer = currentNode->getNaboer();
+		for(size_t i=0;i<currentNodeNaboer.size();i++){
+			Node* nabo = currentNodeNaboer[i];
+			updateDStruct(currentNode,currentPathLength,nabo,structVector);
+			sort(structVector.begin(),structVector.end(),vectorSort);
+		}
+		finished.push_back(currentStruct);
+		/*for(int j=0;j<numberOfSquares;j++){
+			Node* tempNode = nodeArray[j];
+			dijkstraNodeDistance tempStruct = structArr[j];
+		}*/
+		
+	}
+
+	//sorterer for å få struct som inneholder start node bakerst
+	sort(finished.begin(),finished.end(),vectorSort);
+
+	//begynner med nest sist struct
+	//siden det ikke finnes en Path mellom start node og seg selv
+	vector<Path*> nyPathVector;
+	for(int y = finished.size()-2;y>=0;y--){
+		Path* optimalPathForStruct = getPathBetweenNodes(finished[y].node,finished[y].throughNode);
+		nyPathVector.push_back(optimalPathForStruct);
+	}
+
+	//printStructs(finished);
+	printPath(start,end,finished);
+	//oppdaterGraf(nyPathVector);
 }
 
 bool Maze::dfs(Node * start, Node * target) {
@@ -198,8 +367,6 @@ bool Maze::bfs(Node* start, Node* target) {
 	toVisit.push(start);
 	while (!toVisit.empty()) {
 		Node* current = toVisit.front();
-		current->printCoords();
-		cout << endl;
 		toVisit.pop();
 		if (notVisited(current, visited)) {
 			if (current == target) {
