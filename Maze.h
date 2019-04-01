@@ -26,14 +26,20 @@ public:
 	Node* getStartNode();
 	Node* getEndNode();
 	Maze(Parser* parser);
+
 	void debugging();
+	void printNodeCount();
+	void printPathCount();
+	void printPaths();
 	//void buildNodes();
 	void connectNodes();
+	void printSquares();
 	void printNodes();
 
 	//algo
 	bool dfs(Node* start, Node* target);
 	bool bfs(Node* start, Node* target);
+	void runDijkstra(Node* start);
 };
 
 #endif

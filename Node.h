@@ -17,6 +17,7 @@ public:
 	void printSquare();
 	void printCoords();
 	Square* getSquare();
+	std::string getCoords();
 };
 
 #endif

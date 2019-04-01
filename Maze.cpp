@@ -40,6 +40,20 @@ Node* Maze::getEndNode(){
 }
 
 void Maze::printNodes(){
+	for(int i = 0;i<numberOfSquares;i++){
+		Node* temp = nodeArray[i];
+		if(temp){
+			cout << temp->getCoords() << " -> ";
+			vector<Node*> tempNaboer = temp->getNaboer();
+			for(size_t j=0;j<tempNaboer.size();j++){
+				cout << tempNaboer[j]->getCoords() << " ";
+			}
+			cout << endl;
+		}
+	}
+}
+
+void Maze::printSquares(){
 	for(int i=0;i<10;i++){
 		Node* temp = nodeArray[i];
 		if(temp){
@@ -49,19 +63,55 @@ void Maze::printNodes(){
 	}
 }
 
+void Maze::printNodeCount(){
+	int count = 0;
+	for(int i=0;i<numberOfSquares;i++){
+		if(nodeArray[i]) count++;
+	}
+	cout << "nodeCount: " << count << endl;
+}
+
+void Maze::printPaths(){
+	for(size_t i=0;i<paths.size();i++){
+		Path* p = paths[i];
+		Node* from = p->getFromNode();
+		Node* to = p->getToNode();
+		to->printCoords();
+		cout << " <-- " << p->getLength() << " --> ";
+		from->printCoords();
+		cout << endl;
+	}
+}
+
+void Maze::printPathCount(){
+	int count = 0;
+	int length = 0;
+	for(size_t i=0;i<paths.size();i++){
+		if(paths[i]->getLength()>1){
+			length += paths[i]->getLength();
+			count++;
+		}
+	}
+	cout << "pathAbove1Count: " << count << " pathAbove1LengthSum: " << length << endl;
+}
+
 void Maze::connectNodes(){
 	nodeArray = new Node*[numberOfSquares];
 	for(int row=0;row<sideNumber;row++){
 		bool firstRow = row == 0;
-		bool lastRow = row == sideNumber-1;
+		bool lastRow = row == (sideNumber-1);
 		for(int col=0;col<sideNumber;col++){
 			int index = row*sideNumber+col;
 			Square* tempSquare = squareArray[index];
+			int tempSquareRow = tempSquare->getRow();
+			int tempSquareCol = tempSquare->getCol();
+
 
 			//hvis currentSquare er node
 			if(tempSquare->isNode(firstRow,lastRow)){
 				Node* tempNode = new Node(tempSquare);
 				nodeArray[index] = tempNode;
+
 				//hvis Square ikke har wall til venstre og col er større enn 0, finn første venstre nabo
 				if(!tempSquare->hasWall(Direction::WEST) && col > 0){
 					
@@ -69,24 +119,35 @@ void Maze::connectNodes(){
 					for(int x = col-1; x >= 0;x--){
 						int leftSearchIndex = row*sideNumber+x;
 						Square* tempLeftSquare = squareArray[leftSearchIndex];
-						if(tempLeftSquare->isNode(firstRow,lastRow)){
+						bool isTempLeftSquareInFirstRow = tempLeftSquare->getRow() == 0;
+						bool isTempLeftSquareInLastRow = tempLeftSquare->getRow() == (sideNumber-1);
+						if(tempLeftSquare->isNode(isTempLeftSquareInFirstRow,isTempLeftSquareInLastRow)){
 							Node* tempLeftNode = nodeArray[leftSearchIndex];
 							addNabo(tempLeftNode,tempNode,westLength);
+							break;
 						}
 						westLength++;
 					}
 				}
 
 				//leter nordover til første nabo
-				if(tempSquare->hasWall(Direction::NORTH) && row > 0){
+				if(!tempSquare->hasWall(Direction::NORTH) && row > 0){
+					
 					int northLength = 1;
-					for(int y=row-1;y >= 0;y-=sideNumber){
+					for(int y=row-1;y >= 0;y--){
+
 						int northSearchIndex = y*sideNumber+col;
 						Square* tempNorthSquare = squareArray[northSearchIndex];
-						if(tempNorthSquare->isNode(firstRow,lastRow)){
+
+						bool isTempNorthSquareInFirstRow = tempNorthSquare->getRow() == 0;
+						bool isTempNorthSquareInLastRow = tempNorthSquare->getRow() == (sideNumber-1);
+						if(tempNorthSquare->isNode(isTempNorthSquareInFirstRow,isTempNorthSquareInLastRow)){
 							Node* tempNorthNode = nodeArray[northSearchIndex];
 							addNabo(tempNorthNode,tempNode,northLength);
+
+							break;
 						}
+
 						northLength++;
 					}
 				}
@@ -104,6 +165,10 @@ void Maze::debugging(){
 			temp->printSquare();
 		}
 	}
+}
+
+void Maze::runDijkstra(Node* start){
+
 }
 
 bool Maze::dfs(Node * start, Node * target) {
@@ -133,6 +198,8 @@ bool Maze::bfs(Node* start, Node* target) {
 	toVisit.push(start);
 	while (!toVisit.empty()) {
 		Node* current = toVisit.front();
+		current->printCoords();
+		cout << endl;
 		toVisit.pop();
 		if (notVisited(current, visited)) {
 			if (current == target) {

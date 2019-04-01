@@ -3,7 +3,15 @@
 using namespace std;
 
 void Square::printCoords(){
-	cout << "row: " << row << " col: " << col << endl;
+	cout << "row: " << row << " col: " << col;
+}
+
+int Square::getRow(){
+	return row;
+}
+
+int Square::getCol(){
+	return col;
 }
 
 void Square::setWalls(){

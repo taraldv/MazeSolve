@@ -19,6 +19,8 @@ public:
 	int getOpeningCount();
 	bool hasWall(Direction direction);
 	bool isNode(bool firstRow, bool lastRow);
+	int getRow();
+	int getCol();
 	Square(int**arr, int col, int row);
 	void print();
 	int getSize();
