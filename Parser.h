@@ -22,5 +22,7 @@ public:
 	//void write(char* fname);
 	Square** parse();
 	int getSquareNumber();
+	int getHeight();
+	int getWidth();
 };
 #endif

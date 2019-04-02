@@ -4,20 +4,31 @@ using namespace std;
 
 Maze::Maze(Parser* parser){
 	squareArray = parser->parse();
-	numberOfSquares = parser->getSquareNumber();
-	sideNumber = sqrt(numberOfSquares);
+	squareArrayLength = parser->getSquareNumber();
+	//-2 for border, og hver square er 16 px
+	height = (parser->getHeight()-2)/16;
+	width = (parser->getWidth()-2)/16;
 	connectNodes();
 }
 
 Square** Maze::getSquareArray(){
 	return squareArray;
 }
-int Maze::getArraySize(){
-	return numberOfSquares;
+
+vector<Node*> Maze::getOptimalPathNodes(){
+	return optimalPathNodes;
 }
 
-int Maze::getSides(){
-	return sideNumber;
+int Maze::getSquareArrayLength(){
+	return squareArrayLength;
+}
+
+int Maze::getHeight(){
+	return height;
+}
+
+int Maze::getWidth(){
+	return width;
 }
 
 void Maze::addNabo(Node* one, Node* two, int len){
@@ -28,7 +39,7 @@ void Maze::addNabo(Node* one, Node* two, int len){
 }
 
 Node* Maze::getStartNode(){
-	for(int i=0;i<sideNumber;i++){
+	for(int i=0;i<width;i++){
 		Node* tempNode = nodeArray[i];
 		if(tempNode){
 			Square* temp = nodeArray[i]->getSquare();
@@ -42,7 +53,7 @@ Node* Maze::getStartNode(){
 }
 
 Node* Maze::getEndNode(){
-	for(int i=numberOfSquares-sideNumber;i<numberOfSquares;i++){
+	for(int i=squareArrayLength-width;i<squareArrayLength;i++){
 		Node* tempNode = nodeArray[i];
 		if(tempNode){
 			Square* temp = nodeArray[i]->getSquare();
@@ -56,7 +67,7 @@ Node* Maze::getEndNode(){
 }
 
 void Maze::printNodes(){
-	for(int i = 0;i<numberOfSquares;i++){
+	for(int i = 0;i<squareArrayLength;i++){
 		Node* temp = nodeArray[i];
 		if(temp){
 			cout << temp->getCoords() << " -> ";
@@ -81,7 +92,7 @@ void Maze::printSquares(){
 
 void Maze::printNodeCount(){
 	int count = 0;
-	for(int i=0;i<numberOfSquares;i++){
+	for(int i=0;i<squareArrayLength;i++){
 		if(nodeArray[i]) count++;
 	}
 	cout << "nodeCount: " << count << endl;
@@ -112,32 +123,40 @@ void Maze::printPathCount(){
 }
 
 void Maze::connectNodes(){
-	nodeArray = new Node*[numberOfSquares];
-	for(int row=0;row<sideNumber;row++){
+	nodeArray = new Node*[squareArrayLength];
+	//cout << height << ", " << width << ", " << squareArrayLength << endl;
+	for(int row=0;row<height;row++){
 		bool firstRow = row == 0;
-		bool lastRow = row == (sideNumber-1);
-		for(int col=0;col<sideNumber;col++){
-			int index = row*sideNumber+col;
+		bool lastRow = row == (height-1);
+		for(int col=0;col<width;col++){
+			int index = row*width+col;
+			//cout << "index: " << index << endl;
+			//cout << " row: "<< row << " col: "<< col << endl;
 			Square* tempSquare = squareArray[index];
-			//int tempSquareRow = tempSquare->getRow();
-			//int tempSquareCol = tempSquare->getCol();
-
+			/*if(!tempSquare){
+				cout << "square finnes ikke,skal ikke skje" << endl;
+			}*/
 
 			//hvis currentSquare er node
 			if(tempSquare->isNode(firstRow,lastRow)){
+				//cout << "er node" << endl;
 				Node* tempNode = new Node(tempSquare);
+				//tempNode->printCoords();
+				//cout << endl;
+				//tempNode->printSquare();
 				nodeArray[index] = tempNode;
 
 				//hvis Square ikke har wall til venstre og col er større enn 0, finn første venstre nabo
 				if(!tempSquare->hasWall(Direction::WEST) && col > 0){
-					
+					//cout << "leter etter venstre nabo" << endl;
 					int westLength = 1;
 					for(int x = col-1; x >= 0;x--){
-						int leftSearchIndex = row*sideNumber+x;
+						int leftSearchIndex = row*width+x;
 						Square* tempLeftSquare = squareArray[leftSearchIndex];
 						bool isTempLeftSquareInFirstRow = tempLeftSquare->getRow() == 0;
-						bool isTempLeftSquareInLastRow = tempLeftSquare->getRow() == (sideNumber-1);
+						bool isTempLeftSquareInLastRow = tempLeftSquare->getRow() == (height-1);
 						if(tempLeftSquare->isNode(isTempLeftSquareInFirstRow,isTempLeftSquareInLastRow)){
+							//cout << "fant venstre nabo" << endl;
 							Node* tempLeftNode = nodeArray[leftSearchIndex];
 							addNabo(tempLeftNode,tempNode,westLength);
 							break;
@@ -148,19 +167,19 @@ void Maze::connectNodes(){
 
 				//leter nordover til første nabo
 				if(!tempSquare->hasWall(Direction::NORTH) && row > 0){
-					
+					//cout << "leter etter nabo nordover" << endl;
 					int northLength = 1;
 					for(int y=row-1;y >= 0;y--){
 
-						int northSearchIndex = y*sideNumber+col;
+						int northSearchIndex = y*width+col;
 						Square* tempNorthSquare = squareArray[northSearchIndex];
 
 						bool isTempNorthSquareInFirstRow = tempNorthSquare->getRow() == 0;
-						bool isTempNorthSquareInLastRow = tempNorthSquare->getRow() == (sideNumber-1);
+						bool isTempNorthSquareInLastRow = tempNorthSquare->getRow() == (height-1);
 						if(tempNorthSquare->isNode(isTempNorthSquareInFirstRow,isTempNorthSquareInLastRow)){
 							Node* tempNorthNode = nodeArray[northSearchIndex];
 							addNabo(tempNorthNode,tempNode,northLength);
-
+							//cout << "addedNorthNabo: " << tempNorthNode->getCoords() << endl;
 							break;
 						}
 
@@ -173,20 +192,10 @@ void Maze::connectNodes(){
 	}
 }
 
-void Maze::debugging(){
-	for(int i=numberOfSquares-sideNumber;i<numberOfSquares;i++){
-		Node* temp = nodeArray[i];
-		if(temp){
-			temp->printCoords();
-			temp->printSquare();
-		}
-	}
-}
-
 
 vector<dStruct> Maze::generateStructs(Node* start){
 	vector<dStruct> output;
-	for(int i=0;i<numberOfSquares;i++){
+	for(int i=0;i<squareArrayLength;i++){
 		Node* temp = nodeArray[i];
 
 		/* setter avstand til alle nodes lik max, lagrer det i en struct arr */
@@ -243,6 +252,7 @@ Path* Maze::getPathBetweenNodes(Node* n, Node* m){
 		if(fromMatch && toMatch) return p;
 	}
 	cout << "path not found, burde ikke skje" << endl;
+	cout << "er disse naboer? " << n->getCoords() << " & " << m->getCoords() << endl; 
 	return NULL;
 }
 
@@ -278,11 +288,11 @@ void Maze::updateDStruct(Node* current,int currentPathLength, Node* nabo, vector
 	}
 }
 
-void printPath(Node* start, Node* end,vector<dStruct> sVect){
+vector<Node*> printPath(Node* start, Node* end,vector<dStruct> sVect){
 
 	Node* through = end;
 	Node* current = nullptr;
-
+	vector<Node*> output;
 	while(current != start){
 
 		for(size_t i=0;i<sVect.size();i++){
@@ -290,10 +300,12 @@ void printPath(Node* start, Node* end,vector<dStruct> sVect){
 			if(temp.node==through){
 				through = temp.throughNode;
 				current = temp.node;
-				cout << current->getCoords() << endl;
+				output.push_back(current);
+				//cout << current->getCoords() << endl;
 			}
 		}
 	}
+	return output;
 }
 
 void Maze::runDijkstra(Node* start, Node* end){
@@ -307,9 +319,15 @@ void Maze::runDijkstra(Node* start, Node* end){
 
 		dStruct currentStruct = structVector.back();
 		int currentPathLength = currentStruct.length;
+
 		structVector.pop_back();
 		//cout << currentStruct.length << endl;
 		Node* currentNode = currentStruct.node;
+		if(currentPathLength == numeric_limits<int>::max()){
+			currentNode->printCoords();
+			cout << endl;
+			cout << "currentPathLength er max, burde ikke skje?" << endl;
+		}
 		vector<Node*> currentNodeNaboer = currentNode->getNaboer();
 		for(size_t i=0;i<currentNodeNaboer.size();i++){
 			Node* nabo = currentNodeNaboer[i];
@@ -317,26 +335,28 @@ void Maze::runDijkstra(Node* start, Node* end){
 			sort(structVector.begin(),structVector.end(),vectorSort);
 		}
 		finished.push_back(currentStruct);
-		/*for(int j=0;j<numberOfSquares;j++){
+		/*for(int j=0;j<squareArrayLength;j++){
 			Node* tempNode = nodeArray[j];
 			dijkstraNodeDistance tempStruct = structArr[j];
 		}*/
 		
 	}
 
+	optimalPathNodes =  printPath(start,end,finished);
 	//sorterer for å få struct som inneholder start node bakerst
-	sort(finished.begin(),finished.end(),vectorSort);
+	
 
 	//begynner med nest sist struct
 	//siden det ikke finnes en Path mellom start node og seg selv
+	/*sort(finished.begin(),finished.end(),vectorSort);
 	vector<Path*> nyPathVector;
 	for(int y = finished.size()-2;y>=0;y--){
 		Path* optimalPathForStruct = getPathBetweenNodes(finished[y].node,finished[y].throughNode);
 		nyPathVector.push_back(optimalPathForStruct);
-	}
+	}*/
 
 	//printStructs(finished);
-	printPath(start,end,finished);
+	
 	//oppdaterGraf(nyPathVector);
 }
 

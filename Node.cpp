@@ -9,6 +9,14 @@ void Node::addNabo(Node* node){
 	naboVektor.push_back(node);
 }
 
+int Node::getRow(){
+	return square->getRow();
+}
+
+int Node::getCol(){
+	return square->getCol();
+}
+
 string Node::getCoords(){
 	string row = to_string(square->getRow());
 	string col = to_string(square->getCol());

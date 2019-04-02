@@ -6,7 +6,6 @@
 #include "Node.h"
 #include "Path.h"
 #include <iostream>
-#include <cmath>
 #include <vector>
 #include <queue>
 #include <limits>
@@ -21,9 +20,12 @@ struct dStruct{
 class Maze{
 private:
 	Square** squareArray;
+	int squareArrayLength;
+
 	std::vector<Path*> paths;
-	int numberOfSquares;
-	int sideNumber;
+	std::vector<Node*> optimalPathNodes;
+	int width;
+	int height;
 	Node** nodeArray;
 	void addNabo(Node* nodeOne, Node* nodeTwo, int len);
 	static bool vectorSort(dStruct x, dStruct y);
@@ -39,11 +41,15 @@ public:
 	Node* getStartNode();
 	Node* getEndNode();
 	Square** getSquareArray();
-	int getSides();
-	int getArraySize();
+
+	int getSquareArrayLength();
+	int getHeight();
+	int getWidth();
+
+	std::vector<Node*> getOptimalPathNodes();
+
 	Maze(Parser* parser);
 
-	void debugging();
 	void printNodeCount();
 	void printPathCount();
 	void printPaths();

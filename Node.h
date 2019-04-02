@@ -16,6 +16,8 @@ public:
 	void printNaboer();
 	void printSquare();
 	void printCoords();
+	int getRow();
+	int getCol();
 	Square* getSquare();
 	std::string getCoords();
 };

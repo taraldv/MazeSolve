@@ -8,6 +8,8 @@
 class Writer{
 private:
 	Maze* maze;
+	std::string getBorderColorString();
+	std::string getAnimationString();
 public:
 	Writer(Maze* m);
 	void write();

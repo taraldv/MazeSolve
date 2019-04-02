@@ -20,6 +20,14 @@
 
 using namespace std;
 
+int Parser::getHeight(){
+  return height;
+}
+
+int Parser::getWidth(){
+  return width;
+}
+
 Parser::Parser(char* fname){
   FILE *fp = fopen(fname, "rb");
 
@@ -141,11 +149,15 @@ Square** Parser::parse(){
   int side = 16;
   int border = 1;
   int numberOfSquareRows = (height-border*2)/side;
+ // cout << "numberOfSquareRows: "<< numberOfSquareRows << endl;
   int numberOfSquareColumns = (width-border*2)/side;
+  //cout << "numberOfSquareColumns" << numberOfSquareColumns << endl;
   squares = numberOfSquareRows*numberOfSquareColumns;
   Square** squareArr = new Square*[squares];
+  //int count = 0;
   for(int i=0;i<numberOfSquareRows;i++){
     for(int j=0;j<numberOfSquareColumns;j++){
+      //count++;
       int** pixelArr = new int*[side*side];
       //cout << "square row: " << i << endl;
       //cout << "square col: " << j << endl;
@@ -157,10 +169,12 @@ Square** Parser::parse(){
           pixelArr[x*side+y] = getPixels(col+1,row+1);
         }
       }
-      int squareIndex = i*numberOfSquareRows+j;
+      int squareIndex = i*numberOfSquareColumns+j;
+      //cout << "new Square på index:" << squareIndex << " row:" << i << " col:" << j << endl;
       squareArr[squareIndex] = new Square(pixelArr,j,i);
     }
   }
+  //cout << "count: " << count << endl;
   return squareArr;
 }
 

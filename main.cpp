@@ -6,14 +6,15 @@ using namespace std;
 
 
 int main() {
-	Parser* p = new Parser("maze2.png");
+	Parser* p = new Parser("maze3.png");
+	//p->parse();
 	Maze* maze = new Maze(p);
 	delete p;
 	
 
 	Writer* w = new Writer(maze);
 	w->write();
-	w->writeBin();
+	//w->writeBin();
 
 	//maze->printNodeCount();
 
@@ -36,6 +37,9 @@ int main() {
 
 	cout << "dfs: " << depthFirst << " bfs: " << breadthFirst << endl;*/
 
+	//maze->printPaths();
+
+	//maze->printNodes();
 	//maze->runDijkstra(start,end);
 
 
