@@ -10,8 +10,10 @@ private:
 	Maze* maze;
 	std::string getBorderColorString();
 	std::string getAnimationString();
+	std::string getSquareBorderString();
+	int speed;
 public:
-	Writer(Maze* m);
+	Writer(Maze* m, int s);
 	void write();
 	void writeBin();
 };
