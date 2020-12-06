@@ -12,15 +12,6 @@ Example 1: <br>
 <img style="display:block" src="https://tarves.no/gif/maze1.png">
 Solution:<br>
 <img style="display:block" src="https://tarves.no/gif/maze1.gif"height="200">
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 Example 2: <br>
 <img style="display:block" src="https://tarves.no/gif/maze2.png">
 Solution: <br>
