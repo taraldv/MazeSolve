@@ -6,7 +6,14 @@ Example 1: <br>
 Solution:<br>
 <img style="display:block" src="https://tarves.no/gif/maze1.gif" align="left" height="200">
 <br>
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 Example 2: <br>
 ![Maze1](https://tarves.no/gif/maze2.png)<br>
 Solution: <br>
