@@ -5,6 +5,8 @@ Example 1: <br>
 ![Maze1](https://tarves.no/gif/maze1.png)<br>
 Solution:<br>
 <a href="url" display="block"><img src="https://tarves.no/gif/maze1.gif" align="left" height="200"></a>
+<br>
+
 Example 2: <br>
 ![Maze1](https://tarves.no/gif/maze2.png)<br>
 Solution: <br>
