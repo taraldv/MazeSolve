@@ -4,8 +4,8 @@ The program will solve the maze and display the solution using a html page with 
 Example 1: <br>
 ![Maze1](https://tarves.no/gif/maze1.png)<br>
 Solution:<br>
-![Maze1](https://tarves.no/gif/maze1.gif)<br>
+<a href="url" display="block"><img src="https://tarves.no/gif/maze1.gif" align="left" height="200"></a>
 Example 2: <br>
 ![Maze1](https://tarves.no/gif/maze2.png)<br>
 Solution: <br>
-![Maze2](https://tarves.no/gif/maze2.gif)
+<a href="url"><img src="https://tarves.no/gif/maze2.gif" align="left" height="300"></a><br>
